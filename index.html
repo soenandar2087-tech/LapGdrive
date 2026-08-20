@@ -6,97 +6,150 @@
 <title>Laporan Google-Drive</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;padding:24px;
-  font-family:Arial,sans-serif;
-  background:#f1f3f4;
-}
-.wrap{max-width:720px;margin:0 auto}
+body{margin:0;padding:24px;font-family:Arial,Helvetica,sans-serif;background:#f1f3f4}
+.wrap{max-width:760px;margin:0 auto}
+
 .box{width:100%;border:1px solid #dadce0;border-radius:12px;overflow:hidden;background:#f8f9fa}
-.btn-main{width:100%;border:0;background:#f8f9fa;color:#1a73e8;font-weight:700;font-size:16px;padding:15px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-.btn-main:hover{background:#f1f3f4}
-.btn-main:after{content:"⌄";color:#666}
-.btn-main.active:after{content:"⌃"}
+
+/* ---------- HEADER + DATE PILL ---------- */
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:#f8f9fa}
+.head-left{display:flex;align-items:center;gap:8px;color:#1a73e8;font-weight:700;font-size:16px;cursor:pointer;padding:6px 8px;border-radius:8px;user-select:none}
+.head-left:hover{background:#f1f3f4}
+.head-right{display:flex;align-items:center;gap:8px}
+
+.date-pill{
+  position:relative;display:inline-flex;align-items:center;gap:6px;
+  background:#fff;border:1px solid #e0e0e0;border-radius:999px;
+  padding:6px 10px;box-shadow:0 1px 3px rgba(0,0,0,.08);
+}
+.date-pill svg{flex-shrink:0}
+.date-pill input[type=date]{
+  border:0;outline:0;background:transparent;font-size:13px;color:#3c4043;
+  font-family:inherit;width:104px;cursor:pointer;
+}
+.date-pill input[type=date]::-webkit-calendar-picker-indicator{
+  opacity:0;position:absolute;left:0;top:0;width:100%;height:100%;cursor:pointer;
+}
+.date-pill .chev-sm{color:#9aa0a6;font-size:12px;pointer-events:none}
+
+.chev{color:#5f6368;font-size:16px;cursor:pointer;padding:6px 8px;border-radius:8px;user-select:none}
+.chev:hover{background:#f1f3f4}
+.head.open .chev{transform:rotate(180deg)}
+
+/* ---------- PANEL ---------- */
 .panel{max-height:0;overflow:hidden;transition:max-height .15s ease;padding:0 18px;background:#f8f9fa}
 .list{list-style:square;margin:0;padding:12px 0 12px 18px;font-size:14px}
 .list li{margin:8px 0}
 .title{list-style:none;margin-left:-18px;font-weight:700;color:#202124;display:flex;align-items:center;gap:8px;margin-bottom:12px !important}
-a.month{
-  display:inline-flex;align-items:center;padding:7px 12px;margin-left:-2px;
-  border-radius:10px;color:#1a73e8;cursor:pointer;text-decoration:none !important;
-  transition:background-color .15s ease,color .15s ease,transform .08s ease;
-}
-a.month:hover,a.month:focus{background:#e8f0fe;color:#174ea6}
-a.month:active{transform:scale(.97)}
+
+/* bulan: sorotan HANYA saat terpilih */
+a.month{display:inline-flex;align-items:center;padding:7px 12px;margin-left:-2px;border-radius:10px;color:#1a73e8;cursor:pointer;text-decoration:none !important}
+a.month:hover,a.month:focus{background:transparent;color:#1a73e8}
 a.month.active-month{background:#d2e3fc;color:#174ea6;font-weight:700;box-shadow:inset 0 0 0 1px rgba(26,115,232,.18)}
+
+/* breadcrumb */
+.crumb{list-style:none;margin-left:-18px;display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13px;margin-bottom:10px !important}
+.crumb a{color:#1a73e8;cursor:pointer;text-decoration:none;padding:4px 8px;border-radius:8px}
+.crumb a:hover{background:#e8f0fe}
+.crumb span.sep{color:#9aa0a6}
+.crumb b{color:#202124;padding:4px 8px}
+
+/* baris item */
 .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;margin-left:-10px;border-radius:10px}
 .row:hover{background:#eef3fd}
-.row a{color:#1a73e8;text-decoration:none !important;word-break:break-word}
+.row .main{display:flex;align-items:center;gap:8px;min-width:0}
+.row a.link,.row .fname{color:#1a73e8;text-decoration:none !important;word-break:break-word;cursor:pointer}
+.row .fname{font-weight:700;color:#174ea6}
+.badge-date{font-size:11px;color:#5f6368;background:#e8eaed;border-radius:999px;padding:2px 8px;white-space:nowrap}
 .actions{display:flex;gap:4px;flex-shrink:0}
 .icon-btn{border:0;background:transparent;cursor:pointer;font-size:14px;padding:5px 7px;border-radius:8px}
 .icon-btn.edit:hover{background:#d2e3fc}
 .icon-btn.del:hover{background:#fce8e6}
-.nav{display:flex;justify-content:space-between;align-items:center;padding:0 0 16px}
-.plus{width:36px;height:36px;border:0;border-radius:50%;background:#1a73e8;color:#fff;font-size:22px;cursor:pointer}
-.plus:hover{background:#1557b0}
+
+.li-folder,.li-link{list-style:none;margin-left:-18px}
+
+/* nav & tombol */
+.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 0 16px;flex-wrap:wrap}
+.nav-left{display:flex;gap:8px}
+.btn-add{border:0;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-folder{background:#e8f0fe;color:#174ea6}
+.btn-folder:hover{background:#d2e3fc}
+.btn-link{background:#1a73e8;color:#fff}
+.btn-link:hover{background:#1557b0}
 .back{color:#5f6368;font-size:13px;font-weight:700;cursor:pointer;padding:7px 10px;border-radius:8px}
 .back:hover{color:#1a73e8;background:#e8f0fe}
+
+/* form */
 .form{display:none;border-top:1px dashed #dadce0;padding:14px 0 18px}
 .form.show{display:block}
 .form label{display:block;font-size:12px;font-weight:700;color:#5f6368;margin-bottom:8px}
-.form input{width:100%;padding:10px;border:1px solid #dadce0;border-radius:8px;margin-bottom:8px;font-size:14px;outline:none}
+.form input{width:100%;padding:10px;border:1px solid #dadce0;border-radius:8px;margin-bottom:8px;font-size:14px;outline:none;font-family:inherit}
 .form input:focus{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,.12)}
 .form .btns{display:flex;gap:8px}
 .save,.cancel{flex:1;border:0;border-radius:8px;padding:10px;font-weight:700;cursor:pointer}
 .save{background:#1a73e8;color:#fff}
 .save:hover{background:#1557b0}
 .cancel{background:#e8eaed;color:#3c4043}
+.cancel:hover{background:#dadce0}
+
+/* status */
 .status{display:none;margin:8px 0 12px;padding:9px 11px;border-radius:10px;font-size:13px;align-items:center;gap:8px}
 .status.show{display:flex}
 .status.ok{background:#e6f4ea;color:#137333}
 .status.err{background:#fce8e6;color:#c5221f}
 .status.wait{background:#fef7e0;color:#b06000}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.1);border-left-color:currentColor;border-radius:50%;animation:spin .55s linear infinite}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.1);border-left-color:currentColor;border-radius:50%;animation:spin .55s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-fade{opacity:.5;pointer-events:none}
+.loading-fade{opacity:.5;pointer-events:none;transition:opacity .1s ease}
 .empty{list-style:none;margin-left:-18px;color:#5f6368;font-style:italic;padding:7px 10px;border-radius:8px;background:#f1f3f4}
 </style>
 </head>
 <body>
 <div class="wrap">
 <div class="box" id="mainBox">
-  <button type="button" class="btn-main" id="mainBtn">Laporan Google-Drive</button>
 
+  <!-- HEADER -->
+  <div class="head" id="head">
+    <div class="head-left" id="mainBtn">Laporan Google-Drive</div>
+    <div class="head-right">
+      <div class="date-pill" id="datePill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="18" rx="3"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <input type="date" id="datePick">
+        <span class="chev-sm">⌄</span>
+      </div>
+      <span class="chev" id="chev">⌄</span>
+    </div>
+  </div>
+
+  <!-- PANEL BULAN -->
   <div class="panel" id="monthPanel">
-    <ul class="list">
+    <ul class="list" id="monthList">
       <li class="title">Select Progress Report &gt;&gt;</li>
-      <li><a class="month" onmouseover="prefetch('Januari')" onclick="openMonth('Januari')">Januari</a></li>
-      <li><a class="month" onmouseover="prefetch('Februari')" onclick="openMonth('Februari')">Februari</a></li>
-      <li><a class="month" onmouseover="prefetch('Maret')" onclick="openMonth('Maret')">Maret</a></li>
-      <li><a class="month" onmouseover="prefetch('April')" onclick="openMonth('April')">April</a></li>
-      <li><a class="month" onmouseover="prefetch('Mei')" onclick="openMonth('Mei')">Mei</a></li>
-      <li><a class="month" onmouseover="prefetch('Juni')" onclick="openMonth('Juni')">Juni</a></li>
-      <li><a class="month" onmouseover="prefetch('Juli')" onclick="openMonth('Juli')">Juli</a></li>
-      <li><a class="month" onmouseover="prefetch('Agustus')" onclick="openMonth('Agustus')">Agustus</a></li>
-      <li><a class="month" onmouseover="prefetch('September')" onclick="openMonth('September')">September</a></li>
-      <li><a class="month" onmouseover="prefetch('Oktober')" onclick="openMonth('Oktober')">Oktober</a></li>
-      <li><a class="month" onmouseover="prefetch('November')" onclick="openMonth('November')">November</a></li>
-      <li><a class="month" onmouseover="prefetch('Desember')" onclick="openMonth('Desember')">Desember</a></li>
     </ul>
   </div>
 
+  <!-- PANEL ISI -->
   <div class="panel" id="reportPanel" style="display:none">
     <div id="loadingArea">
       <ul class="list" id="reportList"></ul>
       <div class="status" id="status"></div>
+
       <div class="nav">
-        <button type="button" class="plus" id="plusBtn" onclick="openAdd()">+</button>
+        <div class="nav-left">
+          <button type="button" class="btn-add btn-folder" onclick="openAddFolder()">📁 Folder Baru</button>
+          <button type="button" class="btn-add btn-link" onclick="openAddLink()">＋ Laporan</button>
+        </div>
         <span class="back" onclick="backMonths()">&lt;&lt; Kembali Pilih Bulan</span>
       </div>
+
       <div class="form" id="formBox">
-        <label id="formTitle">TAMBAH PELAPORAN BARU</label>
-        <input type="text" id="nameInput" placeholder="Nama laporan">
+        <label id="formTitle">TAMBAH LAPORAN</label>
+        <input type="text" id="nameInput" placeholder="Nama">
         <input type="text" id="urlInput" placeholder="URL https://...">
+        <input type="date" id="dateInput">
         <div class="btns">
           <button type="button" class="save" onclick="saveItem()">Simpan</button>
           <button type="button" class="cancel" onclick="closeForm()">Batal</button>
@@ -104,210 +157,408 @@ a.month.active-month{background:#d2e3fc;color:#174ea6;font-weight:700;box-shadow
       </div>
     </div>
   </div>
+
 </div>
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzDQiPDDJWCDVzbxMMuGt77k3csw1mCpTX3-kljgjsXFBcxC6u8ewbqk_qze2brQSgI/exec";
-const NEED_VERSION = 3;
+/* ============ KONFIGURASI ============ */
+const API_URL = "https://script.google.com/macros/s/AKfycby2s_GI5jVMFymDidpv8gqfab4_01zHHINay_kb_i20JZ-CmdJDapuYFCnIyx6mnSOa/exec";
+const NEED_VERSION = 4;
 const CACHE_TTL = 30000;
+const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
-let currentMonth = "", currentList = [], editIndex = null, statusTimeout = null;
+/* ============ STATE ============ */
+let currentMonth = "";
+let currentPath  = "";
+let dataFolders  = [];
+let dataLinks    = [];
+let formMode     = "link";   // link | folder
+let editKind     = null;     // link | folder
+let editIndex    = null;
+let statusTimeout = null;
 const cache = {};
 
-const mainBox = document.getElementById("mainBox");
-const mainBtn = document.getElementById("mainBtn");
-const monthPanel = document.getElementById("monthPanel");
+/* ============ ELEMEN ============ */
+const head        = document.getElementById("head");
+const mainBox     = document.getElementById("mainBox");
+const mainBtn     = document.getElementById("mainBtn");
+const chev        = document.getElementById("chev");
+const datePill    = document.getElementById("datePill");
+const datePick    = document.getElementById("datePick");
+const monthPanel  = document.getElementById("monthPanel");
+const monthList   = document.getElementById("monthList");
 const reportPanel = document.getElementById("reportPanel");
-const reportList = document.getElementById("reportList");
-const formBox = document.getElementById("formBox");
-const plusBtn = document.getElementById("plusBtn");
-const nameInput = document.getElementById("nameInput");
-const urlInput = document.getElementById("urlInput");
-const formTitle = document.getElementById("formTitle");
-const statusEl = document.getElementById("status");
+const reportList  = document.getElementById("reportList");
+const formBox     = document.getElementById("formBox");
+const formTitle   = document.getElementById("formTitle");
+const nameInput   = document.getElementById("nameInput");
+const urlInput    = document.getElementById("urlInput");
+const dateInput   = document.getElementById("dateInput");
+const statusEl    = document.getElementById("status");
 const loadingArea = document.getElementById("loadingArea");
 
-function getCached(m){ return cache[m] ? cache[m].data : null; }
-function isStale(m){ const c = cache[m]; return !c || (Date.now()-c.ts >= CACHE_TTL); }
-function setCache(m, data){ cache[m] = { data:data, ts:Date.now() }; }
-function expand(el){ el.style.maxHeight = el.scrollHeight + "px"; }
-function isOpen(){ return mainBtn.classList.contains("active"); }
+/* ============ TANGGAL ============ */
+function todayISO(){
+  const d = new Date();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  return d.getFullYear() + "-" + m + "-" + dd;
+}
+datePick.value = todayISO();
+datePill.addEventListener("click", function(e){ e.stopPropagation(); });
 
+/* ============ DAFTAR BULAN ============ */
+MONTHS.forEach(function(m){
+  const li = document.createElement("li");
+  const a = document.createElement("a");
+  a.className = "month";
+  a.textContent = m;
+  a.onmouseover = function(){ prefetch(m, ""); };
+  a.onclick = function(){ openMonth(m); };
+  li.appendChild(a);
+  monthList.appendChild(li);
+});
+
+/* ============ CACHE ============ */
+function ckey(m,p){ return m + "|" + p; }
+function getCached(m,p){ const c = cache[ckey(m,p)]; return c ? c.data : null; }
+function isStale(m,p){ const c = cache[ckey(m,p)]; return !c || (Date.now()-c.ts >= CACHE_TTL); }
+function setCache(m,p,data){ cache[ckey(m,p)] = { data:data, ts:Date.now() }; }
+
+/* ============ BUKA / TUTUP ============ */
+function expand(el){ el.style.maxHeight = el.scrollHeight + "px"; }
+function isOpen(){ return head.classList.contains("open"); }
+function openDropdown(){
+  head.classList.add("open");
+  if (reportPanel.style.display === "block") expand(reportPanel); else expand(monthPanel);
+}
 function closeDropdown(){
   if (!isOpen()) return;
-  mainBtn.classList.remove("active");
+  head.classList.remove("open");
   monthPanel.style.maxHeight = null;
   reportPanel.style.maxHeight = null;
 }
-function openDropdown(){
-  mainBtn.classList.add("active");
-  if (reportPanel.style.display === "block") expand(reportPanel);
-  else expand(monthPanel);
-}
+function toggleDropdown(e){ e.stopPropagation(); isOpen() ? closeDropdown() : openDropdown(); }
 
-mainBtn.addEventListener("click", function(e){
-  e.stopPropagation();
-  isOpen() ? closeDropdown() : openDropdown();
-});
+mainBtn.addEventListener("click", toggleDropdown);
+chev.addEventListener("click", toggleDropdown);
 mainBox.addEventListener("click", function(e){ e.stopPropagation(); });
 document.addEventListener("click", closeDropdown);
 document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeDropdown(); });
 
+/* ============ STATUS ============ */
 function setStatus(msg, type){
   if (statusTimeout) clearTimeout(statusTimeout);
-  statusEl.innerHTML = type === "wait"
+  statusEl.innerHTML = (type === "wait")
     ? '<span class="spinner"></span><span>' + msg + '</span>'
     : msg;
   statusEl.className = "status show " + type;
   expand(reportPanel);
-  if (type !== "wait") {
+  if (type !== "wait"){
     statusTimeout = setTimeout(function(){ statusEl.className = "status"; expand(reportPanel); }, 3000);
   }
 }
 function setLoader(on){ loadingArea.classList.toggle("loading-fade", on); }
 
+/* ============ FETCH ============ */
 function doFetch(params, showLoader){
-  const q = Object.keys(params).map(k => encodeURIComponent(k)+"="+encodeURIComponent(params[k])).join("&");
+  const q = Object.keys(params).map(function(k){
+    return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
+  }).join("&");
   if (showLoader) setLoader(true);
+
   return fetch(API_URL + "?" + q + "&_ts=" + Date.now(), { method:"GET", cache:"no-store" })
-    .then(r => r.text())
-    .then(text => {
+    .then(function(r){ return r.text(); })
+    .then(function(t){
       if (showLoader) setLoader(false);
-      let data;
-      try { data = JSON.parse(text); } catch(e){ throw new Error("Server tidak merespons dengan benar."); }
-      if (data.v !== NEED_VERSION) throw new Error("Server masih versi lama. Deploy ulang Apps Script.");
-      return data;
+      let d;
+      try { d = JSON.parse(t); } catch(e){ throw new Error("Server tidak merespons dengan benar."); }
+      if (d.v !== NEED_VERSION) throw new Error("Server versi lama (v" + (d.v||"?") + "). Deploy ulang Apps Script versi 4.");
+      return d;
     })
-    .catch(err => { if (showLoader) setLoader(false); throw err; });
+    .catch(function(err){ if (showLoader) setLoader(false); throw err; });
 }
 
-function prefetch(month){
-  if (getCached(month)) return;
-  doFetch({ action:"list", month }, false)
-    .then(res => { if (res.ok) setCache(month, res.data || []); })
-    .catch(()=>{});
+function prefetch(month, path){
+  if (getCached(month, path)) return;
+  doFetch({ action:"list", month:month, path:path }, false)
+    .then(function(res){ if (res.ok) setCache(month, path, res); })
+    .catch(function(){});
 }
+
+/* ============ NAVIGASI ============ */
 function setActiveMonthUI(month){
-  document.querySelectorAll("a.month").forEach(a => {
+  document.querySelectorAll("a.month").forEach(function(a){
     a.classList.toggle("active-month", a.textContent.trim() === month);
   });
 }
 
 function openMonth(month){
-  currentMonth = month; editIndex = null;
+  currentMonth = month;
+  currentPath = "";
   setActiveMonthUI(month);
-  monthPanel.style.display = "none"; monthPanel.style.maxHeight = null;
-  reportPanel.style.display = "block"; closeForm(true);
-  const cached = getCached(month);
-  if (cached) {
-    currentList = cached; renderList();
-    if (isStale(month)) refreshBackground(month);
+  monthPanel.style.display = "none";
+  monthPanel.style.maxHeight = null;
+  reportPanel.style.display = "block";
+  head.classList.add("open");
+  closeForm(true);
+  gotoPath("");
+}
+
+function gotoPath(path){
+  currentPath = path;
+  closeForm(true);
+  const cached = getCached(currentMonth, path);
+  if (cached){
+    apply(cached);
+    if (isStale(currentMonth, path)) refreshBackground(currentMonth, path);
   } else {
-    reportList.innerHTML = '<li class="title"><span class="spinner" style="color:#1a73e8"></span> Memuat ' + month + '...</li>';
-    expand(reportPanel); loadList();
+    reportList.innerHTML = '<li class="title"><span class="spinner" style="color:#1a73e8"></span> Memuat...</li>';
+    expand(reportPanel);
+    doFetch({ action:"list", month:currentMonth, path:path }, true)
+      .then(function(res){
+        if (!res.ok) throw new Error(res.error || "Gagal memuat");
+        setCache(currentMonth, path, res);
+        apply(res);
+      })
+      .catch(function(err){
+        reportList.innerHTML = '<li class="empty">Gagal memuat data</li>';
+        setStatus(err.message, "err");
+      });
   }
 }
-function refreshBackground(month){
-  doFetch({ action:"list", month }, false).then(res => {
-    if (!res.ok) return;
-    const data = res.data || [];
-    setCache(month, data);
-    if (month === currentMonth && JSON.stringify(data) !== JSON.stringify(currentList)) {
-      currentList = data; renderList();
-    }
-  }).catch(()=>{});
-}
-function backMonths(){
-  reportPanel.style.display = "none"; reportPanel.style.maxHeight = null;
-  monthPanel.style.display = "block"; expand(monthPanel);
-  currentMonth = ""; currentList = []; editIndex = null;
-  statusEl.className = "status";
-}
-function loadList(){
-  doFetch({ action:"list", month:currentMonth }, true)
-    .then(res => {
-      if (!res.ok) throw new Error(res.error || "Gagal memuat");
-      setCache(currentMonth, res.data || []);
-      currentList = res.data || [];
-      renderList();
+
+function refreshBackground(month, path){
+  doFetch({ action:"list", month:month, path:path }, false)
+    .then(function(res){
+      if (!res.ok) return;
+      setCache(month, path, res);
+      if (month === currentMonth && path === currentPath) apply(res);
     })
-    .catch(err => {
-      reportList.innerHTML = '<li class="empty">Gagal memuat data</li>';
-      setStatus(err.message, "err"); expand(reportPanel);
-    });
+    .catch(function(){});
 }
-function renderList(){
+
+function apply(res){
+  dataFolders = res.folders || [];
+  dataLinks   = res.links   || [];
+  render();
+}
+
+function backMonths(){
+  reportPanel.style.display = "none";
+  reportPanel.style.maxHeight = null;
+  monthPanel.style.display = "block";
+  expand(monthPanel);
+  currentMonth = ""; currentPath = "";
+  dataFolders = []; dataLinks = [];
+  statusEl.className = "status";
+  setActiveMonthUI("");
+}
+
+/* ============ RENDER ============ */
+function render(){
   reportList.innerHTML = "";
-  const title = document.createElement("li");
-  title.className = "title";
-  title.textContent = "Daily Progress Report (" + currentMonth + ") >>";
-  reportList.appendChild(title);
-  if (!currentList.length) {
-    const empty = document.createElement("li");
-    empty.className = "empty";
-    empty.textContent = "Belum ada laporan. Klik + untuk menambah.";
-    reportList.appendChild(empty);
-  } else {
-    currentList.forEach((item, index) => {
-      const li = document.createElement("li");
-      const row = document.createElement("div"); row.className = "row";
+
+  // Breadcrumb
+  const crumb = document.createElement("li");
+  crumb.className = "crumb";
+  const parts = currentPath ? currentPath.split("/") : [];
+
+  const rootA = document.createElement("a");
+  rootA.textContent = "📅 " + currentMonth;
+  rootA.onclick = function(){ gotoPath(""); };
+  crumb.appendChild(rootA);
+
+  let acc = "";
+  parts.forEach(function(p, i){
+    acc = acc ? acc + "/" + p : p;
+    const sep = document.createElement("span");
+    sep.className = "sep"; sep.textContent = "›";
+    crumb.appendChild(sep);
+    if (i === parts.length - 1){
+      const b = document.createElement("b");
+      b.textContent = "📁 " + p;
+      crumb.appendChild(b);
+    } else {
+      const target = acc;
       const a = document.createElement("a");
-      a.href = item.url; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = item.name;
-      const actions = document.createElement("div"); actions.className = "actions";
-      const editBtn = document.createElement("button");
-      editBtn.type = "button"; editBtn.className = "icon-btn edit"; editBtn.textContent = "✏️";
-      editBtn.onclick = () => openEdit(index);
-      const delBtn = document.createElement("button");
-      delBtn.type = "button"; delBtn.className = "icon-btn del"; delBtn.textContent = "🗑️";
-      delBtn.onclick = () => deleteItem(index);
-      actions.append(editBtn, delBtn); row.append(a, actions); li.append(row); reportList.append(li);
-    });
+      a.textContent = "📁 " + p;
+      a.onclick = function(){ gotoPath(target); };
+      crumb.appendChild(a);
+    }
+  });
+  reportList.appendChild(crumb);
+
+  // Kosong
+  if (!dataFolders.length && !dataLinks.length){
+    const e = document.createElement("li");
+    e.className = "empty";
+    e.textContent = "Masih kosong. Tambahkan folder atau laporan.";
+    reportList.appendChild(e);
+    expand(reportPanel);
+    return;
   }
+
+  // Folder
+  dataFolders.forEach(function(f, i){
+    const li = document.createElement("li"); li.className = "li-folder";
+    const row = document.createElement("div"); row.className = "row";
+
+    const main = document.createElement("div"); main.className = "main";
+    const nm = document.createElement("span"); nm.className = "fname";
+    nm.textContent = "📁 " + f.name;
+    nm.onclick = function(){ gotoPath(currentPath ? currentPath + "/" + f.name : f.name); };
+    main.appendChild(nm);
+
+    const act = document.createElement("div"); act.className = "actions";
+    act.appendChild(mkBtn("✏️","edit", function(){ openEdit("folder", i); }));
+    act.appendChild(mkBtn("🗑️","del",  function(){ deleteItem("folder", i); }));
+
+    row.appendChild(main); row.appendChild(act);
+    li.appendChild(row); reportList.appendChild(li);
+  });
+
+  // Laporan
+  dataLinks.forEach(function(it, i){
+    const li = document.createElement("li"); li.className = "li-link";
+    const row = document.createElement("div"); row.className = "row";
+
+    const main = document.createElement("div"); main.className = "main";
+    const a = document.createElement("a");
+    a.className = "link"; a.href = it.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    a.textContent = "🔗 " + it.name;
+    main.appendChild(a);
+    if (it.date){
+      const bd = document.createElement("span");
+      bd.className = "badge-date";
+      bd.textContent = fmtDate(it.date);
+      main.appendChild(bd);
+    }
+
+    const act = document.createElement("div"); act.className = "actions";
+    act.appendChild(mkBtn("✏️","edit", function(){ openEdit("link", i); }));
+    act.appendChild(mkBtn("🗑️","del",  function(){ deleteItem("link", i); }));
+
+    row.appendChild(main); row.appendChild(act);
+    li.appendChild(row); reportList.appendChild(li);
+  });
+
   expand(reportPanel);
 }
-function openAdd(){
-  editIndex = null; formTitle.textContent = "TAMBAH PELAPORAN BARU";
+
+function mkBtn(txt, cls, fn){
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "icon-btn " + cls; b.textContent = txt; b.onclick = fn;
+  return b;
+}
+
+function fmtDate(iso){
+  const p = String(iso).split("-");
+  if (p.length !== 3) return iso;
+  return Number(p[1]) + "/" + Number(p[2]) + "/" + p[0];
+}
+
+/* ============ FORM ============ */
+function openAddFolder(){
+  formMode = "folder"; editKind = null; editIndex = null;
+  formTitle.textContent = "TAMBAH FOLDER BARU";
+  nameInput.placeholder = "Nama folder";
+  nameInput.value = "";
+  urlInput.style.display = "none";
+  dateInput.style.display = "none";
+  formBox.classList.add("show");
+  nameInput.focus(); expand(reportPanel);
+}
+
+function openAddLink(){
+  formMode = "link"; editKind = null; editIndex = null;
+  formTitle.textContent = "TAMBAH LAPORAN BARU";
+  nameInput.placeholder = "Nama laporan";
   nameInput.value = ""; urlInput.value = "";
-  formBox.classList.add("show"); plusBtn.textContent = "×"; plusBtn.style.background = "#5f6368";
+  dateInput.value = datePick.value || todayISO();
+  urlInput.style.display = ""; dateInput.style.display = "";
+  formBox.classList.add("show");
   nameInput.focus(); expand(reportPanel);
 }
-function openEdit(index){
-  const item = currentList[index]; if (!item) return;
-  editIndex = index; formTitle.textContent = "EDIT PELAPORAN";
-  nameInput.value = item.name || ""; urlInput.value = item.url || "";
-  formBox.classList.add("show"); plusBtn.textContent = "×"; plusBtn.style.background = "#5f6368";
+
+function openEdit(kind, index){
+  editKind = kind; editIndex = index; formMode = kind;
+  formBox.classList.add("show");
+
+  if (kind === "folder"){
+    const f = dataFolders[index]; if (!f) return;
+    formTitle.textContent = "EDIT NAMA FOLDER";
+    nameInput.placeholder = "Nama folder";
+    nameInput.value = f.name;
+    urlInput.style.display = "none"; dateInput.style.display = "none";
+  } else {
+    const it = dataLinks[index]; if (!it) return;
+    formTitle.textContent = "EDIT LAPORAN";
+    nameInput.placeholder = "Nama laporan";
+    nameInput.value = it.name;
+    urlInput.value = it.url;
+    dateInput.value = it.date || datePick.value;
+    urlInput.style.display = ""; dateInput.style.display = "";
+  }
   nameInput.focus(); expand(reportPanel);
 }
+
 function closeForm(silent){
-  formBox.classList.remove("show"); plusBtn.textContent = "+"; plusBtn.style.background = "#1a73e8";
-  editIndex = null; nameInput.value = ""; urlInput.value = "";
+  formBox.classList.remove("show");
+  editKind = null; editIndex = null;
+  nameInput.value = ""; urlInput.value = "";
   if (!silent) expand(reportPanel);
 }
+
+/* ============ SIMPAN ============ */
 function saveItem(){
-  let name = nameInput.value.trim(), url = urlInput.value.trim();
-  if (!currentMonth) { setStatus("Pilih bulan dulu.", "err"); return; }
-  if (!name || !url) { setStatus("Nama dan URL wajib diisi.", "err"); return; }
-  if (!url.startsWith("http://") && !url.startsWith("https://")) url = "https://" + url;
+  const name = nameInput.value.trim();
+  if (!currentMonth){ setStatus("Pilih bulan dulu.", "err"); return; }
+  if (!name){ setStatus("Nama wajib diisi.", "err"); return; }
+
   const isEdit = editIndex !== null;
-  setStatus(isEdit ? "Menyimpan perubahan..." : "Menyimpan laporan...", "wait");
-  const params = isEdit
-    ? { action:"edit", month:currentMonth, index:editIndex, name, url }
-    : { action:"add", month:currentMonth, name, url };
-  doFetch(params, true).then(res => {
-    if (!res.ok) throw new Error(res.error || "Gagal menyimpan");
-    setCache(currentMonth, res.data || []); currentList = res.data || [];
-    closeForm(true); renderList();
-    setStatus(isEdit ? "Berhasil diedit." : "Berhasil ditambah.", "ok");
-  }).catch(err => setStatus(err.message, "err"));
+  let params;
+
+  if (formMode === "folder"){
+    if (name.indexOf("/") >= 0){ setStatus("Nama folder tidak boleh memuat /", "err"); return; }
+    params = isEdit
+      ? { action:"edit", kind:"folder", month:currentMonth, path:currentPath, index:editIndex, name:name }
+      : { action:"addFolder", month:currentMonth, path:currentPath, name:name };
+    setStatus(isEdit ? "Mengubah nama folder..." : "Membuat folder...", "wait");
+  } else {
+    let url = urlInput.value.trim();
+    if (!url){ setStatus("URL wajib diisi.", "err"); return; }
+    if (url.indexOf("http://") !== 0 && url.indexOf("https://") !== 0) url = "https://" + url;
+    const date = dateInput.value || "";
+    params = isEdit
+      ? { action:"edit", kind:"link", month:currentMonth, path:currentPath, index:editIndex, name:name, url:url, date:date }
+      : { action:"add", month:currentMonth, path:currentPath, name:name, url:url, date:date };
+    setStatus(isEdit ? "Menyimpan perubahan..." : "Menyimpan laporan...", "wait");
+  }
+
+  doFetch(params, true)
+    .then(function(res){
+      if (!res.ok) throw new Error(res.error || "Gagal menyimpan");
+      setCache(currentMonth, currentPath, res);
+      apply(res);
+      closeForm(true);
+      setStatus(isEdit ? "Berhasil diubah." : "Berhasil ditambah.", "ok");
+    })
+    .catch(function(err){ setStatus(err.message, "err"); });
 }
-function deleteItem(index){
-  setStatus("Menghapus laporan...", "wait");
-  doFetch({ action:"delete", month:currentMonth, index }, true).then(res => {
-    if (!res.ok) throw new Error(res.error || "Gagal menghapus");
-    setCache(currentMonth, res.data || []); currentList = res.data || [];
-    renderList(); setStatus("Berhasil dihapus.", "ok");
-  }).catch(err => setStatus(err.message, "err"));
+
+/* ============ HAPUS ============ */
+function deleteItem(kind, index){
+  setStatus(kind === "folder" ? "Menghapus folder & isinya..." : "Menghapus laporan...", "wait");
+  doFetch({ action:"delete", kind:kind, month:currentMonth, path:currentPath, index:index }, true)
+    .then(function(res){
+      if (!res.ok) throw new Error(res.error || "Gagal menghapus");
+      setCache(currentMonth, currentPath, res);
+      apply(res);
+      setStatus("Berhasil dihapus.", "ok");
+    })
+    .catch(function(err){ setStatus(err.message, "err"); });
 }
 </script>
 </body>
