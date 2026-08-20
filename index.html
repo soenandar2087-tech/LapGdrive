@@ -5,560 +5,468 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Laporan Google-Drive</title>
 <style>
+:root{
+  --green:#1b8a3f;
+  --green-dark:#146c31;
+  --green-soft:#e9f6ee;
+  --green-line:#cfe9d8;
+  --ink:#1f2d24;
+  --muted:#6b7b70;
+  --line:#e6ece8;
+  --bg:#f4f7f5;
+  --white:#fff;
+  --radius:14px;
+}
 *{box-sizing:border-box}
-body{margin:0;padding:24px;font-family:Arial,Helvetica,sans-serif;background:#f1f3f4}
-.wrap{max-width:760px;margin:0 auto}
-
-.box{width:100%;border:1px solid #dadce0;border-radius:12px;overflow:hidden;background:#f8f9fa}
-
-/* ---------- HEADER + DATE PILL ---------- */
-.head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;background:#f8f9fa}
-.head-left{display:flex;align-items:center;gap:8px;color:#1a73e8;font-weight:700;font-size:16px;cursor:pointer;padding:6px 8px;border-radius:8px;user-select:none}
-.head-left:hover{background:#f1f3f4}
-.head-right{display:flex;align-items:center;gap:8px}
-
-.date-pill{
-  position:relative;display:inline-flex;align-items:center;gap:6px;
-  background:#fff;border:1px solid #e0e0e0;border-radius:999px;
-  padding:6px 10px;box-shadow:0 1px 3px rgba(0,0,0,.08);
+body{
+  margin:0;padding:24px;background:var(--bg);
+  font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;
+  color:var(--ink);
 }
-.date-pill svg{flex-shrink:0}
-.date-pill input[type=date]{
-  border:0;outline:0;background:transparent;font-size:13px;color:#3c4043;
-  font-family:inherit;width:104px;cursor:pointer;
+.wrap{max-width:820px;margin:0 auto}
+
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 3px rgba(20,60,35,.05)}
+
+/* ---------- TOP BAR ---------- */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--white)}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.brand .dot{width:32px;height:32px;border-radius:9px;background:var(--green-soft);display:flex;align-items:center;justify-content:center;font-size:16px}
+.brand b{font-size:15px;color:var(--ink)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+
+.date-pill{position:relative;display:inline-flex;align-items:center;gap:7px;background:var(--white);border:1px solid #dbe4dd;border-radius:999px;padding:7px 12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.date-pill input[type=date]{border:0;outline:0;background:transparent;font-size:13px;color:var(--ink);font-family:inherit;width:100px;cursor:pointer}
+.date-pill input[type=date]::-webkit-calendar-picker-indicator{opacity:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer}
+.date-pill .cs{color:#9fb0a6;font-size:12px;pointer-events:none}
+
+.chev{color:var(--muted);font-size:15px;cursor:pointer;padding:7px 9px;border-radius:9px;user-select:none;transition:.15s}
+.chev:hover{background:var(--green-soft)}
+.topbar.open .chev{transform:rotate(180deg)}
+
+/* ---------- BODY (collapsible) ---------- */
+.body{max-height:0;overflow:hidden;transition:max-height .18s ease}
+
+/* Banner hijau */
+.banner{margin:16px;padding:18px 20px;border-radius:var(--radius);background:linear-gradient(120deg,#eaf7ef,#f2fbf5);border:1px solid var(--green-line);position:relative;overflow:hidden}
+.banner:after{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(27,138,63,.06)}
+.chip-tag{display:inline-flex;align-items:center;gap:6px;background:var(--green-soft);color:var(--green-dark);font-size:11px;font-weight:700;letter-spacing:.4px;padding:5px 11px;border-radius:999px;text-transform:uppercase}
+.banner h1{margin:12px 0 6px;font-size:22px;color:var(--ink)}
+.banner p{margin:0;color:var(--muted);font-size:13.5px;line-height:1.6;max-width:560px}
+
+/* Section */
+.section{margin:0 16px 16px;padding:16px 18px;border:1px solid var(--line);border-radius:var(--radius)}
+.section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+
+/* Chips bulan */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{
+  border:1px solid #dce6e0;background:var(--white);color:var(--ink);
+  padding:9px 16px;border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;
+  transition:.14s;user-select:none;
 }
-.date-pill input[type=date]::-webkit-calendar-picker-indicator{
-  opacity:0;position:absolute;left:0;top:0;width:100%;height:100%;cursor:pointer;
-}
-.date-pill .chev-sm{color:#9aa0a6;font-size:12px;pointer-events:none}
+.chip:hover{border-color:var(--green);color:var(--green-dark);background:#f6fbf8}
+.chip.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 6px rgba(27,138,63,.28)}
 
-.chev{color:#5f6368;font-size:16px;cursor:pointer;padding:6px 8px;border-radius:8px;user-select:none}
-.chev:hover{background:#f1f3f4}
-.head.open .chev{transform:rotate(180deg)}
+/* Panel isi */
+.content{margin:0 16px 16px}
+.placeholder{border:1px dashed #d7e2db;border-radius:var(--radius);padding:48px 20px;text-align:center;color:var(--muted)}
+.placeholder b{display:block;color:var(--ink);font-size:14px;margin-bottom:4px}
+.placeholder span{font-size:13px}
 
-/* ---------- PANEL ---------- */
-.panel{max-height:0;overflow:hidden;transition:max-height .15s ease;padding:0 18px;background:#f8f9fa}
-.list{list-style:square;margin:0;padding:12px 0 12px 18px;font-size:14px}
-.list li{margin:8px 0}
-.title{list-style:none;margin-left:-18px;font-weight:700;color:#202124;display:flex;align-items:center;gap:8px;margin-bottom:12px !important}
+/* Breadcrumb */
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13px;margin-bottom:14px}
+.crumb a{color:var(--green-dark);cursor:pointer;text-decoration:none;padding:4px 9px;border-radius:8px;font-weight:600}
+.crumb a:hover{background:var(--green-soft)}
+.crumb .sep{color:#b7c4bc}
+.crumb b{color:var(--ink);padding:4px 9px}
 
-/* bulan: sorotan HANYA saat terpilih */
-a.month{display:inline-flex;align-items:center;padding:7px 12px;margin-left:-2px;border-radius:10px;color:#1a73e8;cursor:pointer;text-decoration:none !important}
-a.month:hover,a.month:focus{background:transparent;color:#1a73e8}
-a.month.active-month{background:#d2e3fc;color:#174ea6;font-weight:700;box-shadow:inset 0 0 0 1px rgba(26,115,232,.18)}
+/* Toolbar */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;transition:.14s;font-family:inherit}
+.btn-folder{background:var(--green-soft);color:var(--green-dark);border:1px solid var(--green-line)}
+.btn-folder:hover{background:#dbf0e3}
+.btn-link{background:var(--green);color:#fff}
+.btn-link:hover{background:var(--green-dark)}
+.btn-back{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.btn-back:hover{color:var(--green-dark);border-color:var(--green-line);background:#f6fbf8}
 
-/* breadcrumb */
-.crumb{list-style:none;margin-left:-18px;display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13px;margin-bottom:10px !important}
-.crumb a{color:#1a73e8;cursor:pointer;text-decoration:none;padding:4px 8px;border-radius:8px}
-.crumb a:hover{background:#e8f0fe}
-.crumb span.sep{color:#9aa0a6}
-.crumb b{color:#202124;padding:4px 8px}
+/* Daftar item */
+.items{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--white);transition:.14s}
+.item:hover{border-color:var(--green-line);background:#f8fbf9}
+.item .left{display:flex;align-items:center;gap:11px;min-width:0}
+.item .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ic.folder{background:#fff4dc}
+.ic.link{background:var(--green-soft)}
+.item .meta{min-width:0}
+.item .nm{font-size:14px;font-weight:600;color:var(--ink);word-break:break-word;cursor:pointer;text-decoration:none}
+.item a.nm:hover{color:var(--green-dark);text-decoration:underline}
+.item .fname{cursor:pointer}
+.item .fname:hover{color:var(--green-dark)}
+.item .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.item .right{display:flex;gap:4px;flex-shrink:0}
+.icon-btn{border:0;background:transparent;cursor:pointer;font-size:14px;padding:7px;border-radius:8px;transition:.14s}
+.icon-btn.edit:hover{background:var(--green-soft)}
+.icon-btn.del:hover{background:#fdeceb}
 
-/* baris item */
-.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 10px;margin-left:-10px;border-radius:10px}
-.row:hover{background:#eef3fd}
-.row .main{display:flex;align-items:center;gap:8px;min-width:0}
-.row a.link,.row .fname{color:#1a73e8;text-decoration:none !important;word-break:break-word;cursor:pointer}
-.row .fname{font-weight:700;color:#174ea6}
-.badge-date{font-size:11px;color:#5f6368;background:#e8eaed;border-radius:999px;padding:2px 8px;white-space:nowrap}
-.actions{display:flex;gap:4px;flex-shrink:0}
-.icon-btn{border:0;background:transparent;cursor:pointer;font-size:14px;padding:5px 7px;border-radius:8px}
-.icon-btn.edit:hover{background:#d2e3fc}
-.icon-btn.del:hover{background:#fce8e6}
-
-.li-folder,.li-link{list-style:none;margin-left:-18px}
-
-/* nav & tombol */
-.nav{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 0 16px;flex-wrap:wrap}
-.nav-left{display:flex;gap:8px}
-.btn-add{border:0;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer}
-.btn-folder{background:#e8f0fe;color:#174ea6}
-.btn-folder:hover{background:#d2e3fc}
-.btn-link{background:#1a73e8;color:#fff}
-.btn-link:hover{background:#1557b0}
-.back{color:#5f6368;font-size:13px;font-weight:700;cursor:pointer;padding:7px 10px;border-radius:8px}
-.back:hover{color:#1a73e8;background:#e8f0fe}
-
-/* form */
-.form{display:none;border-top:1px dashed #dadce0;padding:14px 0 18px}
+/* Form */
+.form{display:none;margin-top:14px;border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfdfc}
 .form.show{display:block}
-.form label{display:block;font-size:12px;font-weight:700;color:#5f6368;margin-bottom:8px}
-.form input{width:100%;padding:10px;border:1px solid #dadce0;border-radius:8px;margin-bottom:8px;font-size:14px;outline:none;font-family:inherit}
-.form input:focus{border-color:#1a73e8;box-shadow:0 0 0 2px rgba(26,115,232,.12)}
-.form .btns{display:flex;gap:8px}
-.save,.cancel{flex:1;border:0;border-radius:8px;padding:10px;font-weight:700;cursor:pointer}
-.save{background:#1a73e8;color:#fff}
-.save:hover{background:#1557b0}
-.cancel{background:#e8eaed;color:#3c4043}
-.cancel:hover{background:#dadce0}
+.form h4{margin:0 0 12px;font-size:12px;font-weight:800;letter-spacing:.4px;color:var(--muted);text-transform:uppercase}
+.form label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px;font-weight:600}
+.form input{width:100%;padding:10px 12px;border:1px solid #d7e2db;border-radius:9px;margin-bottom:11px;font-size:13.5px;outline:none;font-family:inherit;color:var(--ink)}
+.form input:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(27,138,63,.12)}
+.form .btns{display:flex;gap:8px;margin-top:2px}
+.save,.cancel{flex:1;border:0;border-radius:9px;padding:11px;font-weight:700;cursor:pointer;font-family:inherit;font-size:13.5px}
+.save{background:var(--green);color:#fff}
+.save:hover{background:var(--green-dark)}
+.cancel{background:#eef2ef;color:#3c4a41}
+.cancel:hover{background:#e2e8e4}
 
-/* status */
-.status{display:none;margin:8px 0 12px;padding:9px 11px;border-radius:10px;font-size:13px;align-items:center;gap:8px}
+/* Status */
+.status{display:none;margin-bottom:14px;padding:10px 13px;border-radius:10px;font-size:13px;align-items:center;gap:8px;font-weight:600}
 .status.show{display:flex}
-.status.ok{background:#e6f4ea;color:#137333}
-.status.err{background:#fce8e6;color:#c5221f}
-.status.wait{background:#fef7e0;color:#b06000}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.1);border-left-color:currentColor;border-radius:50%;animation:spin .55s linear infinite;flex-shrink:0}
+.status.ok{background:var(--green-soft);color:var(--green-dark)}
+.status.err{background:#fdeceb;color:#c5342b}
+.status.wait{background:#fff7e6;color:#a56a00}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,.12);border-left-color:currentColor;border-radius:50%;animation:spin .55s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loading-fade{opacity:.5;pointer-events:none;transition:opacity .1s ease}
-.empty{list-style:none;margin-left:-18px;color:#5f6368;font-style:italic;padding:7px 10px;border-radius:8px;background:#f1f3f4}
+.loading-fade{opacity:.55;pointer-events:none;transition:opacity .1s ease}
 </style>
 </head>
 <body>
 <div class="wrap">
-<div class="box" id="mainBox">
+<div class="card">
 
-  <!-- HEADER -->
-  <div class="head" id="head">
-    <div class="head-left" id="mainBtn">Laporan Google-Drive</div>
-    <div class="head-right">
+  <!-- TOP BAR -->
+  <div class="topbar" id="topbar">
+    <div class="brand" id="brandBtn">
+      <span class="dot">🚚</span>
+      <b>Laporan Google-Drive</b>
+    </div>
+    <div class="topbar-right">
       <div class="date-pill" id="datePill">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e8e3e" stroke-width="2" stroke-linecap="round">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1b8a3f" stroke-width="2.1" stroke-linecap="round">
           <rect x="3" y="4" width="18" height="18" rx="3"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
         <input type="date" id="datePick">
-        <span class="chev-sm">⌄</span>
+        <span class="cs">⌄</span>
       </div>
       <span class="chev" id="chev">⌄</span>
     </div>
   </div>
 
-  <!-- PANEL BULAN -->
-  <div class="panel" id="monthPanel">
-    <ul class="list" id="monthList">
-      <li class="title">Select Progress Report &gt;&gt;</li>
-    </ul>
-  </div>
+  <!-- BODY -->
+  <div class="body" id="body">
 
-  <!-- PANEL ISI -->
-  <div class="panel" id="reportPanel" style="display:none">
-    <div id="loadingArea">
-      <ul class="list" id="reportList"></ul>
+    <!-- Banner -->
+    <div class="banner">
+      <span class="chip-tag">📁 Arsip / Laporan</span>
+      <h1>Laporan Google-Drive</h1>
+      <p>Kelola laporan per bulan dengan folder bertingkat dan tautan Google Drive dalam tampilan yang rapi dan sederhana.</p>
+    </div>
+
+    <!-- Pilih bulan -->
+    <div class="section">
+      <div class="section-title">📅 Pilih Bulan</div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <!-- Konten -->
+    <div class="content" id="loadingArea">
       <div class="status" id="status"></div>
-
-      <div class="nav">
-        <div class="nav-left">
-          <button type="button" class="btn-add btn-folder" onclick="openAddFolder()">📁 Folder Baru</button>
-          <button type="button" class="btn-add btn-link" onclick="openAddLink()">＋ Laporan</button>
-        </div>
-        <span class="back" onclick="backMonths()">&lt;&lt; Kembali Pilih Bulan</span>
-      </div>
-
-      <div class="form" id="formBox">
-        <label id="formTitle">TAMBAH LAPORAN</label>
-        <input type="text" id="nameInput" placeholder="Nama">
-        <input type="text" id="urlInput" placeholder="URL https://...">
-        <input type="date" id="dateInput">
-        <div class="btns">
-          <button type="button" class="save" onclick="saveItem()">Simpan</button>
-          <button type="button" class="cancel" onclick="closeForm()">Batal</button>
+      <div id="viewArea">
+        <div class="placeholder">
+          <b>Pilih bulan untuk mulai.</b>
+          <span>Daftar folder & laporan akan muncul di sini.</span>
         </div>
       </div>
     </div>
-  </div>
 
+  </div>
 </div>
 </div>
 
 <script>
 /* ============ KONFIGURASI ============ */
-const API_URL = "https://script.google.com/macros/s/AKfycby2s_GI5jVMFymDidpv8gqfab4_01zHHINay_kb_i20JZ-CmdJDapuYFCnIyx6mnSOa/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzDQiPDDJWCDVzbxMMuGt77k3csw1mCpTX3-kljgjsXFBcxC6u8ewbqk_qze2brQSgI/exec";
 const NEED_VERSION = 4;
 const CACHE_TTL = 30000;
 const MONTHS = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
 /* ============ STATE ============ */
-let currentMonth = "";
-let currentPath  = "";
-let dataFolders  = [];
-let dataLinks    = [];
-let formMode     = "link";   // link | folder
-let editKind     = null;     // link | folder
-let editIndex    = null;
-let statusTimeout = null;
-const cache = {};
+let currentMonth="", currentPath="", dataFolders=[], dataLinks=[];
+let formMode="link", editKind=null, editIndex=null, statusTimeout=null;
+const cache={};
 
 /* ============ ELEMEN ============ */
-const head        = document.getElementById("head");
-const mainBox     = document.getElementById("mainBox");
-const mainBtn     = document.getElementById("mainBtn");
-const chev        = document.getElementById("chev");
-const datePill    = document.getElementById("datePill");
-const datePick    = document.getElementById("datePick");
-const monthPanel  = document.getElementById("monthPanel");
-const monthList   = document.getElementById("monthList");
-const reportPanel = document.getElementById("reportPanel");
-const reportList  = document.getElementById("reportList");
-const formBox     = document.getElementById("formBox");
-const formTitle   = document.getElementById("formTitle");
-const nameInput   = document.getElementById("nameInput");
-const urlInput    = document.getElementById("urlInput");
-const dateInput   = document.getElementById("dateInput");
-const statusEl    = document.getElementById("status");
-const loadingArea = document.getElementById("loadingArea");
+const topbar=document.getElementById("topbar");
+const brandBtn=document.getElementById("brandBtn");
+const chev=document.getElementById("chev");
+const body=document.getElementById("body");
+const datePill=document.getElementById("datePill");
+const datePick=document.getElementById("datePick");
+const chips=document.getElementById("chips");
+const viewArea=document.getElementById("viewArea");
+const statusEl=document.getElementById("status");
+const loadingArea=document.getElementById("loadingArea");
 
 /* ============ TANGGAL ============ */
-function todayISO(){
-  const d = new Date();
-  const m = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  return d.getFullYear() + "-" + m + "-" + dd;
-}
-datePick.value = todayISO();
-datePill.addEventListener("click", function(e){ e.stopPropagation(); });
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+datePick.value=todayISO();
+datePill.addEventListener("click",function(e){e.stopPropagation();});
 
-/* ============ DAFTAR BULAN ============ */
+/* ============ CHIPS BULAN ============ */
 MONTHS.forEach(function(m){
-  const li = document.createElement("li");
-  const a = document.createElement("a");
-  a.className = "month";
-  a.textContent = m;
-  a.onmouseover = function(){ prefetch(m, ""); };
-  a.onclick = function(){ openMonth(m); };
-  li.appendChild(a);
-  monthList.appendChild(li);
+  const c=document.createElement("div");
+  c.className="chip"; c.textContent=m; c.dataset.month=m;
+  c.onmouseover=function(){prefetch(m,"");};
+  c.onclick=function(){openMonth(m);};
+  chips.appendChild(c);
 });
+function setActiveChip(m){
+  chips.querySelectorAll(".chip").forEach(function(c){
+    c.classList.toggle("active", c.dataset.month===m);
+  });
+}
 
 /* ============ CACHE ============ */
-function ckey(m,p){ return m + "|" + p; }
-function getCached(m,p){ const c = cache[ckey(m,p)]; return c ? c.data : null; }
-function isStale(m,p){ const c = cache[ckey(m,p)]; return !c || (Date.now()-c.ts >= CACHE_TTL); }
-function setCache(m,p,data){ cache[ckey(m,p)] = { data:data, ts:Date.now() }; }
+function ck(m,p){return m+"|"+p;}
+function getCached(m,p){const c=cache[ck(m,p)];return c?c.data:null;}
+function isStale(m,p){const c=cache[ck(m,p)];return !c||(Date.now()-c.ts>=CACHE_TTL);}
+function setCache(m,p,d){cache[ck(m,p)]={data:d,ts:Date.now()};}
 
-/* ============ BUKA / TUTUP ============ */
-function expand(el){ el.style.maxHeight = el.scrollHeight + "px"; }
-function isOpen(){ return head.classList.contains("open"); }
-function openDropdown(){
-  head.classList.add("open");
-  if (reportPanel.style.display === "block") expand(reportPanel); else expand(monthPanel);
-}
-function closeDropdown(){
-  if (!isOpen()) return;
-  head.classList.remove("open");
-  monthPanel.style.maxHeight = null;
-  reportPanel.style.maxHeight = null;
-}
-function toggleDropdown(e){ e.stopPropagation(); isOpen() ? closeDropdown() : openDropdown(); }
-
-mainBtn.addEventListener("click", toggleDropdown);
-chev.addEventListener("click", toggleDropdown);
-mainBox.addEventListener("click", function(e){ e.stopPropagation(); });
-document.addEventListener("click", closeDropdown);
-document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeDropdown(); });
+/* ============ BUKA/TUTUP ============ */
+function expand(){body.style.maxHeight=body.scrollHeight+"px";}
+function isOpen(){return topbar.classList.contains("open");}
+function openDrop(){topbar.classList.add("open");expand();}
+function closeDrop(){if(!isOpen())return;topbar.classList.remove("open");body.style.maxHeight=null;}
+function toggleDrop(e){e.stopPropagation();isOpen()?closeDrop():openDrop();}
+brandBtn.addEventListener("click",toggleDrop);
+chev.addEventListener("click",toggleDrop);
+document.querySelector(".card").addEventListener("click",function(e){e.stopPropagation();});
+document.addEventListener("click",closeDrop);
+document.addEventListener("keydown",function(e){if(e.key==="Escape")closeDrop();});
 
 /* ============ STATUS ============ */
-function setStatus(msg, type){
-  if (statusTimeout) clearTimeout(statusTimeout);
-  statusEl.innerHTML = (type === "wait")
-    ? '<span class="spinner"></span><span>' + msg + '</span>'
-    : msg;
-  statusEl.className = "status show " + type;
-  expand(reportPanel);
-  if (type !== "wait"){
-    statusTimeout = setTimeout(function(){ statusEl.className = "status"; expand(reportPanel); }, 3000);
-  }
+function setStatus(msg,type){
+  if(statusTimeout)clearTimeout(statusTimeout);
+  statusEl.innerHTML=(type==="wait")?'<span class="spinner"></span><span>'+msg+'</span>':msg;
+  statusEl.className="status show "+type;
+  expand();
+  if(type!=="wait")statusTimeout=setTimeout(function(){statusEl.className="status";expand();},3000);
 }
-function setLoader(on){ loadingArea.classList.toggle("loading-fade", on); }
+function setLoader(on){loadingArea.classList.toggle("loading-fade",on);}
 
 /* ============ FETCH ============ */
-function doFetch(params, showLoader){
-  const q = Object.keys(params).map(function(k){
-    return encodeURIComponent(k) + "=" + encodeURIComponent(params[k]);
-  }).join("&");
-  if (showLoader) setLoader(true);
-
-  return fetch(API_URL + "?" + q + "&_ts=" + Date.now(), { method:"GET", cache:"no-store" })
-    .then(function(r){ return r.text(); })
+function doFetch(params,showLoader){
+  const q=Object.keys(params).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(params[k]);}).join("&");
+  if(showLoader)setLoader(true);
+  return fetch(API_URL+"?"+q+"&_ts="+Date.now(),{method:"GET",cache:"no-store"})
+    .then(function(r){return r.text();})
     .then(function(t){
-      if (showLoader) setLoader(false);
-      let d;
-      try { d = JSON.parse(t); } catch(e){ throw new Error("Server tidak merespons dengan benar."); }
-      if (d.v !== NEED_VERSION) throw new Error("Server versi lama (v" + (d.v||"?") + "). Deploy ulang Apps Script versi 4.");
+      if(showLoader)setLoader(false);
+      let d;try{d=JSON.parse(t);}catch(e){throw new Error("Server tidak merespons dengan benar.");}
+      if(d.v!==NEED_VERSION)throw new Error("Server versi lama (v"+(d.v||"?")+"). Deploy ulang Apps Script versi 4.");
       return d;
     })
-    .catch(function(err){ if (showLoader) setLoader(false); throw err; });
+    .catch(function(err){if(showLoader)setLoader(false);throw err;});
 }
-
-function prefetch(month, path){
-  if (getCached(month, path)) return;
-  doFetch({ action:"list", month:month, path:path }, false)
-    .then(function(res){ if (res.ok) setCache(month, path, res); })
-    .catch(function(){});
+function prefetch(m,p){
+  if(getCached(m,p))return;
+  doFetch({action:"list",month:m,path:p},false).then(function(res){if(res.ok)setCache(m,p,res);}).catch(function(){});
 }
 
 /* ============ NAVIGASI ============ */
-function setActiveMonthUI(month){
-  document.querySelectorAll("a.month").forEach(function(a){
-    a.classList.toggle("active-month", a.textContent.trim() === month);
-  });
-}
-
 function openMonth(month){
-  currentMonth = month;
-  currentPath = "";
-  setActiveMonthUI(month);
-  monthPanel.style.display = "none";
-  monthPanel.style.maxHeight = null;
-  reportPanel.style.display = "block";
-  head.classList.add("open");
-  closeForm(true);
+  currentMonth=month;currentPath="";
+  setActiveChip(month);
+  if(!isOpen())openDrop();
   gotoPath("");
 }
-
 function gotoPath(path){
-  currentPath = path;
-  closeForm(true);
-  const cached = getCached(currentMonth, path);
-  if (cached){
-    apply(cached);
-    if (isStale(currentMonth, path)) refreshBackground(currentMonth, path);
-  } else {
-    reportList.innerHTML = '<li class="title"><span class="spinner" style="color:#1a73e8"></span> Memuat...</li>';
-    expand(reportPanel);
-    doFetch({ action:"list", month:currentMonth, path:path }, true)
-      .then(function(res){
-        if (!res.ok) throw new Error(res.error || "Gagal memuat");
-        setCache(currentMonth, path, res);
-        apply(res);
-      })
-      .catch(function(err){
-        reportList.innerHTML = '<li class="empty">Gagal memuat data</li>';
-        setStatus(err.message, "err");
-      });
+  currentPath=path;
+  const cached=getCached(currentMonth,path);
+  if(cached){apply(cached);if(isStale(currentMonth,path))refreshBg(currentMonth,path);}
+  else{
+    viewArea.innerHTML='<div class="placeholder"><span class="spinner" style="color:#1b8a3f"></span><br><br>Memuat...</div>';
+    expand();
+    doFetch({action:"list",month:currentMonth,path:path},true)
+      .then(function(res){if(!res.ok)throw new Error(res.error||"Gagal memuat");setCache(currentMonth,path,res);apply(res);})
+      .catch(function(err){viewArea.innerHTML='<div class="placeholder"><b>Gagal memuat data</b></div>';setStatus(err.message,"err");});
   }
 }
-
-function refreshBackground(month, path){
-  doFetch({ action:"list", month:month, path:path }, false)
-    .then(function(res){
-      if (!res.ok) return;
-      setCache(month, path, res);
-      if (month === currentMonth && path === currentPath) apply(res);
-    })
-    .catch(function(){});
+function refreshBg(m,p){
+  doFetch({action:"list",month:m,path:p},false).then(function(res){
+    if(!res.ok)return;setCache(m,p,res);
+    if(m===currentMonth&&p===currentPath)apply(res);
+  }).catch(function(){});
 }
-
-function apply(res){
-  dataFolders = res.folders || [];
-  dataLinks   = res.links   || [];
-  render();
-}
-
-function backMonths(){
-  reportPanel.style.display = "none";
-  reportPanel.style.maxHeight = null;
-  monthPanel.style.display = "block";
-  expand(monthPanel);
-  currentMonth = ""; currentPath = "";
-  dataFolders = []; dataLinks = [];
-  statusEl.className = "status";
-  setActiveMonthUI("");
-}
+function apply(res){dataFolders=res.folders||[];dataLinks=res.links||[];render();}
 
 /* ============ RENDER ============ */
 function render(){
-  reportList.innerHTML = "";
+  const el=document.createElement("div");
 
-  // Breadcrumb
-  const crumb = document.createElement("li");
-  crumb.className = "crumb";
-  const parts = currentPath ? currentPath.split("/") : [];
-
-  const rootA = document.createElement("a");
-  rootA.textContent = "📅 " + currentMonth;
-  rootA.onclick = function(){ gotoPath(""); };
+  /* breadcrumb */
+  const crumb=document.createElement("div");crumb.className="crumb";
+  const rootA=document.createElement("a");rootA.textContent="📅 "+currentMonth;rootA.onclick=function(){gotoPath("");};
   crumb.appendChild(rootA);
-
-  let acc = "";
-  parts.forEach(function(p, i){
-    acc = acc ? acc + "/" + p : p;
-    const sep = document.createElement("span");
-    sep.className = "sep"; sep.textContent = "›";
-    crumb.appendChild(sep);
-    if (i === parts.length - 1){
-      const b = document.createElement("b");
-      b.textContent = "📁 " + p;
-      crumb.appendChild(b);
-    } else {
-      const target = acc;
-      const a = document.createElement("a");
-      a.textContent = "📁 " + p;
-      a.onclick = function(){ gotoPath(target); };
-      crumb.appendChild(a);
-    }
+  const parts=currentPath?currentPath.split("/"):[];let acc="";
+  parts.forEach(function(p,i){
+    acc=acc?acc+"/"+p:p;
+    const s=document.createElement("span");s.className="sep";s.textContent="›";crumb.appendChild(s);
+    if(i===parts.length-1){const b=document.createElement("b");b.textContent="📁 "+p;crumb.appendChild(b);}
+    else{const t=acc;const a=document.createElement("a");a.textContent="📁 "+p;a.onclick=function(){gotoPath(t);};crumb.appendChild(a);}
   });
-  reportList.appendChild(crumb);
+  el.appendChild(crumb);
 
-  // Kosong
-  if (!dataFolders.length && !dataLinks.length){
-    const e = document.createElement("li");
-    e.className = "empty";
-    e.textContent = "Masih kosong. Tambahkan folder atau laporan.";
-    reportList.appendChild(e);
-    expand(reportPanel);
-    return;
+  /* toolbar */
+  const tb=document.createElement("div");tb.className="toolbar";
+  const tools=document.createElement("div");tools.className="tools";
+  const bf=document.createElement("button");bf.className="btn btn-folder";bf.textContent="📁 Folder Baru";bf.onclick=openAddFolder;
+  const bl=document.createElement("button");bl.className="btn btn-link";bl.textContent="＋ Laporan";bl.onclick=openAddLink;
+  tools.appendChild(bf);tools.appendChild(bl);
+  const bk=document.createElement("button");bk.className="btn btn-back";bk.textContent="‹ Pilih Bulan";bk.onclick=backMonths;
+  tb.appendChild(tools);tb.appendChild(bk);
+  el.appendChild(tb);
+
+  /* form container */
+  const formHost=document.createElement("div");formHost.id="formHost";el.appendChild(formHost);
+
+  /* items */
+  const items=document.createElement("div");items.className="items";
+  if(!dataFolders.length&&!dataLinks.length){
+    const ph=document.createElement("div");ph.className="placeholder";
+    ph.innerHTML="<b>Masih kosong.</b><span>Tambahkan folder atau laporan.</span>";
+    items.appendChild(ph);
+  }else{
+    dataFolders.forEach(function(f,i){
+      const it=document.createElement("div");it.className="item";
+      const left=document.createElement("div");left.className="left";
+      const ic=document.createElement("div");ic.className="ic folder";ic.textContent="📁";
+      const meta=document.createElement("div");meta.className="meta";
+      const nm=document.createElement("div");nm.className="nm fname";nm.textContent=f.name;
+      nm.onclick=function(){gotoPath(currentPath?currentPath+"/"+f.name:f.name);};
+      const sub=document.createElement("div");sub.className="sub";sub.textContent="Folder";
+      meta.appendChild(nm);meta.appendChild(sub);left.appendChild(ic);left.appendChild(meta);
+      const right=document.createElement("div");right.className="right";
+      right.appendChild(mkBtn("✏️","edit",function(){openEdit("folder",i);}));
+      right.appendChild(mkBtn("🗑️","del",function(){deleteItem("folder",i);}));
+      it.appendChild(left);it.appendChild(right);items.appendChild(it);
+    });
+    dataLinks.forEach(function(x,i){
+      const it=document.createElement("div");it.className="item";
+      const left=document.createElement("div");left.className="left";
+      const ic=document.createElement("div");ic.className="ic link";ic.textContent="🔗";
+      const meta=document.createElement("div");meta.className="meta";
+      const a=document.createElement("a");a.className="nm";a.href=x.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=x.name;
+      const sub=document.createElement("div");sub.className="sub";sub.textContent=x.date?("Laporan • "+fmtDate(x.date)):"Laporan";
+      meta.appendChild(a);meta.appendChild(sub);left.appendChild(ic);left.appendChild(meta);
+      const right=document.createElement("div");right.className="right";
+      right.appendChild(mkBtn("✏️","edit",function(){openEdit("link",i);}));
+      right.appendChild(mkBtn("🗑️","del",function(){deleteItem("link",i);}));
+      it.appendChild(left);it.appendChild(right);items.appendChild(it);
+    });
   }
+  el.appendChild(items);
 
-  // Folder
-  dataFolders.forEach(function(f, i){
-    const li = document.createElement("li"); li.className = "li-folder";
-    const row = document.createElement("div"); row.className = "row";
-
-    const main = document.createElement("div"); main.className = "main";
-    const nm = document.createElement("span"); nm.className = "fname";
-    nm.textContent = "📁 " + f.name;
-    nm.onclick = function(){ gotoPath(currentPath ? currentPath + "/" + f.name : f.name); };
-    main.appendChild(nm);
-
-    const act = document.createElement("div"); act.className = "actions";
-    act.appendChild(mkBtn("✏️","edit", function(){ openEdit("folder", i); }));
-    act.appendChild(mkBtn("🗑️","del",  function(){ deleteItem("folder", i); }));
-
-    row.appendChild(main); row.appendChild(act);
-    li.appendChild(row); reportList.appendChild(li);
-  });
-
-  // Laporan
-  dataLinks.forEach(function(it, i){
-    const li = document.createElement("li"); li.className = "li-link";
-    const row = document.createElement("div"); row.className = "row";
-
-    const main = document.createElement("div"); main.className = "main";
-    const a = document.createElement("a");
-    a.className = "link"; a.href = it.url; a.target = "_blank"; a.rel = "noopener noreferrer";
-    a.textContent = "🔗 " + it.name;
-    main.appendChild(a);
-    if (it.date){
-      const bd = document.createElement("span");
-      bd.className = "badge-date";
-      bd.textContent = fmtDate(it.date);
-      main.appendChild(bd);
-    }
-
-    const act = document.createElement("div"); act.className = "actions";
-    act.appendChild(mkBtn("✏️","edit", function(){ openEdit("link", i); }));
-    act.appendChild(mkBtn("🗑️","del",  function(){ deleteItem("link", i); }));
-
-    row.appendChild(main); row.appendChild(act);
-    li.appendChild(row); reportList.appendChild(li);
-  });
-
-  expand(reportPanel);
+  viewArea.innerHTML="";viewArea.appendChild(el);
+  expand();
 }
+function mkBtn(t,c,fn){const b=document.createElement("button");b.type="button";b.className="icon-btn "+c;b.textContent=t;b.onclick=fn;return b;}
+function fmtDate(iso){const p=String(iso).split("-");if(p.length!==3)return iso;return Number(p[1])+"/"+Number(p[2])+"/"+p[0];}
 
-function mkBtn(txt, cls, fn){
-  const b = document.createElement("button");
-  b.type = "button"; b.className = "icon-btn " + cls; b.textContent = txt; b.onclick = fn;
-  return b;
-}
-
-function fmtDate(iso){
-  const p = String(iso).split("-");
-  if (p.length !== 3) return iso;
-  return Number(p[1]) + "/" + Number(p[2]) + "/" + p[0];
+function backMonths(){
+  currentMonth="";currentPath="";dataFolders=[];dataLinks=[];
+  setActiveChip("");
+  viewArea.innerHTML='<div class="placeholder"><b>Pilih bulan untuk mulai.</b><span>Daftar folder & laporan akan muncul di sini.</span></div>';
+  expand();
 }
 
 /* ============ FORM ============ */
+function formHTML(){
+  return '<div class="form show" id="formBox">'
+    +'<h4 id="formTitle"></h4>'
+    +'<label id="lblName">Nama</label><input type="text" id="nameInput">'
+    +'<div id="linkFields"><label>URL</label><input type="text" id="urlInput" placeholder="https://...">'
+    +'<label>Tanggal</label><input type="date" id="dateInput"></div>'
+    +'<div class="btns"><button class="save" onclick="saveItem()">Simpan</button>'
+    +'<button class="cancel" onclick="closeForm()">Batal</button></div></div>';
+}
+function mountForm(){document.getElementById("formHost").innerHTML=formHTML();}
+
 function openAddFolder(){
-  formMode = "folder"; editKind = null; editIndex = null;
-  formTitle.textContent = "TAMBAH FOLDER BARU";
-  nameInput.placeholder = "Nama folder";
-  nameInput.value = "";
-  urlInput.style.display = "none";
-  dateInput.style.display = "none";
-  formBox.classList.add("show");
-  nameInput.focus(); expand(reportPanel);
+  formMode="folder";editKind=null;editIndex=null;mountForm();
+  document.getElementById("formTitle").textContent="TAMBAH FOLDER BARU";
+  document.getElementById("lblName").textContent="Nama folder";
+  document.getElementById("linkFields").style.display="none";
+  document.getElementById("nameInput").focus();expand();
 }
-
 function openAddLink(){
-  formMode = "link"; editKind = null; editIndex = null;
-  formTitle.textContent = "TAMBAH LAPORAN BARU";
-  nameInput.placeholder = "Nama laporan";
-  nameInput.value = ""; urlInput.value = "";
-  dateInput.value = datePick.value || todayISO();
-  urlInput.style.display = ""; dateInput.style.display = "";
-  formBox.classList.add("show");
-  nameInput.focus(); expand(reportPanel);
+  formMode="link";editKind=null;editIndex=null;mountForm();
+  document.getElementById("formTitle").textContent="TAMBAH LAPORAN BARU";
+  document.getElementById("lblName").textContent="Nama laporan";
+  document.getElementById("dateInput").value=datePick.value||todayISO();
+  document.getElementById("nameInput").focus();expand();
 }
-
-function openEdit(kind, index){
-  editKind = kind; editIndex = index; formMode = kind;
-  formBox.classList.add("show");
-
-  if (kind === "folder"){
-    const f = dataFolders[index]; if (!f) return;
-    formTitle.textContent = "EDIT NAMA FOLDER";
-    nameInput.placeholder = "Nama folder";
-    nameInput.value = f.name;
-    urlInput.style.display = "none"; dateInput.style.display = "none";
-  } else {
-    const it = dataLinks[index]; if (!it) return;
-    formTitle.textContent = "EDIT LAPORAN";
-    nameInput.placeholder = "Nama laporan";
-    nameInput.value = it.name;
-    urlInput.value = it.url;
-    dateInput.value = it.date || datePick.value;
-    urlInput.style.display = ""; dateInput.style.display = "";
+function openEdit(kind,index){
+  formMode=kind;editKind=kind;editIndex=index;mountForm();
+  if(kind==="folder"){
+    const f=dataFolders[index];if(!f)return;
+    document.getElementById("formTitle").textContent="EDIT NAMA FOLDER";
+    document.getElementById("lblName").textContent="Nama folder";
+    document.getElementById("nameInput").value=f.name;
+    document.getElementById("linkFields").style.display="none";
+  }else{
+    const x=dataLinks[index];if(!x)return;
+    document.getElementById("formTitle").textContent="EDIT LAPORAN";
+    document.getElementById("lblName").textContent="Nama laporan";
+    document.getElementById("nameInput").value=x.name;
+    document.getElementById("urlInput").value=x.url;
+    document.getElementById("dateInput").value=x.date||datePick.value;
   }
-  nameInput.focus(); expand(reportPanel);
+  document.getElementById("nameInput").focus();expand();
 }
-
-function closeForm(silent){
-  formBox.classList.remove("show");
-  editKind = null; editIndex = null;
-  nameInput.value = ""; urlInput.value = "";
-  if (!silent) expand(reportPanel);
-}
+function closeForm(silent){const h=document.getElementById("formHost");if(h)h.innerHTML="";editKind=null;editIndex=null;if(!silent)expand();}
 
 /* ============ SIMPAN ============ */
 function saveItem(){
-  const name = nameInput.value.trim();
-  if (!currentMonth){ setStatus("Pilih bulan dulu.", "err"); return; }
-  if (!name){ setStatus("Nama wajib diisi.", "err"); return; }
-
-  const isEdit = editIndex !== null;
-  let params;
-
-  if (formMode === "folder"){
-    if (name.indexOf("/") >= 0){ setStatus("Nama folder tidak boleh memuat /", "err"); return; }
-    params = isEdit
-      ? { action:"edit", kind:"folder", month:currentMonth, path:currentPath, index:editIndex, name:name }
-      : { action:"addFolder", month:currentMonth, path:currentPath, name:name };
-    setStatus(isEdit ? "Mengubah nama folder..." : "Membuat folder...", "wait");
-  } else {
-    let url = urlInput.value.trim();
-    if (!url){ setStatus("URL wajib diisi.", "err"); return; }
-    if (url.indexOf("http://") !== 0 && url.indexOf("https://") !== 0) url = "https://" + url;
-    const date = dateInput.value || "";
-    params = isEdit
-      ? { action:"edit", kind:"link", month:currentMonth, path:currentPath, index:editIndex, name:name, url:url, date:date }
-      : { action:"add", month:currentMonth, path:currentPath, name:name, url:url, date:date };
-    setStatus(isEdit ? "Menyimpan perubahan..." : "Menyimpan laporan...", "wait");
+  const name=document.getElementById("nameInput").value.trim();
+  if(!currentMonth){setStatus("Pilih bulan dulu.","err");return;}
+  if(!name){setStatus("Nama wajib diisi.","err");return;}
+  const isEdit=editIndex!==null;let params;
+  if(formMode==="folder"){
+    if(name.indexOf("/")>=0){setStatus("Nama folder tidak boleh memuat /","err");return;}
+    params=isEdit?{action:"edit",kind:"folder",month:currentMonth,path:currentPath,index:editIndex,name:name}
+                 :{action:"addFolder",month:currentMonth,path:currentPath,name:name};
+    setStatus(isEdit?"Mengubah folder...":"Membuat folder...","wait");
+  }else{
+    let url=document.getElementById("urlInput").value.trim();
+    if(!url){setStatus("URL wajib diisi.","err");return;}
+    if(url.indexOf("http://")!==0&&url.indexOf("https://")!==0)url="https://"+url;
+    const date=document.getElementById("dateInput").value||"";
+    params=isEdit?{action:"edit",kind:"link",month:currentMonth,path:currentPath,index:editIndex,name:name,url:url,date:date}
+                 :{action:"add",month:currentMonth,path:currentPath,name:name,url:url,date:date};
+    setStatus(isEdit?"Menyimpan perubahan...":"Menyimpan laporan...","wait");
   }
-
-  doFetch(params, true)
-    .then(function(res){
-      if (!res.ok) throw new Error(res.error || "Gagal menyimpan");
-      setCache(currentMonth, currentPath, res);
-      apply(res);
-      closeForm(true);
-      setStatus(isEdit ? "Berhasil diubah." : "Berhasil ditambah.", "ok");
-    })
-    .catch(function(err){ setStatus(err.message, "err"); });
+  doFetch(params,true).then(function(res){
+    if(!res.ok)throw new Error(res.error||"Gagal menyimpan");
+    setCache(currentMonth,currentPath,res);apply(res);
+    setStatus(isEdit?"Berhasil diubah.":"Berhasil ditambah.","ok");
+  }).catch(function(err){setStatus(err.message,"err");});
 }
 
 /* ============ HAPUS ============ */
-function deleteItem(kind, index){
-  setStatus(kind === "folder" ? "Menghapus folder & isinya..." : "Menghapus laporan...", "wait");
-  doFetch({ action:"delete", kind:kind, month:currentMonth, path:currentPath, index:index }, true)
-    .then(function(res){
-      if (!res.ok) throw new Error(res.error || "Gagal menghapus");
-      setCache(currentMonth, currentPath, res);
-      apply(res);
-      setStatus("Berhasil dihapus.", "ok");
-    })
-    .catch(function(err){ setStatus(err.message, "err"); });
+function deleteItem(kind,index){
+  setStatus(kind==="folder"?"Menghapus folder & isinya...":"Menghapus laporan...","wait");
+  doFetch({action:"delete",kind:kind,month:currentMonth,path:currentPath,index:index},true).then(function(res){
+    if(!res.ok)throw new Error(res.error||"Gagal menghapus");
+    setCache(currentMonth,currentPath,res);apply(res);
+    setStatus("Berhasil dihapus.","ok");
+  }).catch(function(err){setStatus(err.message,"err");});
 }
 </script>
 </body>
